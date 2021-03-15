@@ -1,6 +1,6 @@
 <template>
     <div>
-        <navigation-bar title="Absensi Saya">
+        <navigation-bar title="Semua Absen">
             <print-report
                 :title="reportTitle"
                 :items="monthlyAttendancesToItems"

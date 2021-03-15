@@ -1,12 +1,14 @@
 <template>
     <div>
         <v-layout column class="pr-4 py-4 mb-4 white shadow">
-            <apexchart
-                width="100%"
-                type="line"
-                :options="categories"
-                :series="series"
-            />
+            <div :style="isMobile ? 'max-width: 100%' : 'max-width: 600px'">
+                <apexchart
+                    width="100%"
+                    type="line"
+                    :options="categories"
+                    :series="series"
+                />
+            </div>
         </v-layout>
     </div>
 </template>
@@ -21,6 +23,14 @@ export default {
     props: {
         categories: Object,
         series: Array,
+    },
+
+    computed: {
+        isMobile() {
+            let isMobile = this.$vuetify.breakpoint.xs;
+
+            return isMobile;
+        },
     },
 };
 </script>
