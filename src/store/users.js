@@ -7,6 +7,7 @@ const ref = db.collection(END_POINT);
 const state = {
     currentUser: null,
     registrationData: null,
+    employees: [],
 };
 
 const getters = {
@@ -33,6 +34,19 @@ const getters = {
 
         return role;
     },
+
+    employeesSortedByName(state) {
+        let employees = state.employees;
+        let employeesSortedByName = employees.sort((employeeA, employeeB) =>
+            employeeA.displayName > employeeB.displayName
+                ? 1
+                : employeeB.displayName > employeeA.displayName
+                ? -1
+                : 0
+        );
+
+        return employeesSortedByName;
+    },
 };
 
 const mutations = {
@@ -48,6 +62,9 @@ const mutations = {
     },
     CLEAR_REGISTRATION_DATA: (state) => {
         state.registrationData = null;
+    },
+    SET_EMPLOYEES: (state, employees) => {
+        state.employees = employees;
     },
 };
 
@@ -125,7 +142,7 @@ const actions = {
     },
 
     async registerUser({ commit, state }, newUser) {
-        let { id: registrationId } = state.registrationData;
+        let { id: registrationId, status } = state.registrationData;
 
         newUser.registrationId = registrationId;
 
@@ -139,6 +156,7 @@ const actions = {
             usedByUID: newUser.uid,
             usedByDisplayName: newUser.displayName,
             usedByPhotoURL: newUser.photoURL,
+            employeeStatus: status,
         };
 
         try {
@@ -162,6 +180,32 @@ const actions = {
             await dispatch("getUser", uid);
         } catch (err) {
             console.log(err);
+        }
+    },
+
+    async getEmployees({ commit }) {
+        try {
+            let query = await db
+                .collection(`users`)
+                .where("roles", "array-contains", "Pegawai")
+                .get();
+
+            let { docs } = query;
+            let employees = [];
+
+            docs.map((doc) => {
+                var employee = {
+                    id: doc.id,
+                    ...doc.data(),
+                };
+
+                employees.push(employee);
+            });
+
+            commit("SET_EMPLOYEES", employees);
+            return employees;
+        } catch (err) {
+            console.error(err);
         }
     },
 

@@ -39,6 +39,15 @@ export function toNormalDate(value) {
     }
 }
 
+export function toReverseNormalDate(value) {
+    const options = "yyyy-MM-DD";
+    if (value.seconds) {
+        return String(moment(value.seconds * 1000).format(options));
+    } else {
+        return String(moment(value).format(options));
+    }
+}
+
 export function toCollectionDate(value) {
     const options = "yyyyMMDD";
     if (value.seconds) {
@@ -58,12 +67,27 @@ export function toTime(value) {
 }
 
 export function toDayDateMonth(value) {
-    const options = "dddd, DD MMM";
+    const options = "dddd, DD MMMM";
     if (value.seconds) {
         return String(moment(value.seconds * 1000).format(options));
     } else {
         return String(moment(value).format(options));
     }
+}
+
+export function toDifferHour(start, end) {
+    let isFirestoreTimestamp = start && start.seconds != null;
+    let startTime = moment(start);
+    let endTime = moment(end);
+
+    if (isFirestoreTimestamp) {
+        startTime = moment(start.seconds * 1000);
+        endTime = moment(end.seconds * 1000);
+    }
+
+    let differHour = endTime.diff(startTime, "hours");
+
+    return differHour;
 }
 
 // export function toInputDate(value) {

@@ -6,23 +6,26 @@
                 width="100%"
                 class="align-center justify-center"
             >
-                <template v-for="(nav, index) in navList">
+                <template v-for="(navigation, index) in navigations">
                     <v-btn
-                        :key="'nav-' + index"
-                        :exact="nav.link === '/' || nav.link === '/absensi'"
+                        :key="'navigation-' + index"
+                        :exact="
+                            navigation.link === '/' ||
+                                navigation.link === '/absensi'
+                        "
                         text
-                        :value="nav.link"
-                        :to="nav.link"
+                        :value="navigation.link"
+                        :to="navigation.link"
                         height="100%"
-                        :style="active !== nav.link ? 'opacity: 1' : ''"
+                        :style="active !== navigation.link ? 'opacity: 1' : ''"
                     >
-                        <span v-text="nav.text" />
+                        <span v-text="navigation.text" />
 
                         <v-icon
                             v-text="
-                                active === nav.link
-                                    ? nav.icon
-                                    : nav.icon + '-outline'
+                                active === navigation.link
+                                    ? navigation.icon
+                                    : navigation.icon + '-outline'
                             "
                         />
                     </v-btn>
@@ -34,69 +37,16 @@
 
 <script>
 export default {
+    props: {
+        navigations: Array,
+    },
+
     data: () => ({
         active: null,
         forceUpdate: 0,
     }),
 
     computed: {
-        user() {
-            return this.$store.state.users.currentUser;
-        },
-
-        navList() {
-            let navigations = [
-                {
-                    text: "Utama",
-                    icon: "mdi-home",
-                    value: "main",
-                    link: "/",
-                },
-            ];
-            let user = this.user;
-            let isUserNotFound = !user || !user.roles.length;
-
-            if (isUserNotFound) return navigations;
-
-            user.roles.map((role) => {
-                if (role === "Super Admin") {
-                    navigations.push({
-                        text: "Pendaftaran",
-                        icon: "mdi-account-multiple-plus",
-                        value: "registrations",
-                        link: "/register",
-                    });
-                }
-
-                if (role === "Pegawai") {
-                    navigations.push({
-                        text: "Absensi Saya",
-                        icon: "mdi-clipboard-list",
-                        value: "attendances",
-                        link: "/absensi",
-                    });
-                }
-
-                if (role === "Kepala Kepegawaian") {
-                    navigations.push({
-                        text: "Semua Absen",
-                        icon: "mdi-clipboard",
-                        value: "attendances",
-                        link: "/absensi/semua",
-                    });
-                }
-            });
-
-            navigations.push({
-                text: "Profil",
-                icon: "mdi-account",
-                value: "profile",
-                link: "/profil",
-            });
-
-            return navigations;
-        },
-
         currentRoute() {
             let currentRoute = this.$route.path;
 

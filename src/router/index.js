@@ -40,6 +40,12 @@ const routes = [
                 component: () =>
                     import("../views/Default/AttendancesAllDetail.vue"),
             },
+
+            {
+                path: "pegawai",
+                name: "Employees",
+                component: () => import("../views/Default/Employees.vue"),
+            },
             {
                 path: "profil",
                 name: "Profil",

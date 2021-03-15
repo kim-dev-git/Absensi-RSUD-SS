@@ -140,6 +140,9 @@ export default {
         },
 
         async createRegistration() {
+            if (this.selectedRole.value == ["Pegawai", "Kepala Kepegawaian"])
+                this.selectedStatus = "PNS";
+
             let data = {
                 roles: this.selectedRole.value,
                 status: this.selectedStatus,

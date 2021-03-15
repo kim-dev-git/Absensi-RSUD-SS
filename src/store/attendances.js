@@ -5,7 +5,12 @@ import {
     arrayUnion,
 } from "../services/firebase";
 import geolocation from "../services/geolocation";
-import { toCollectionDate, startOfMonth, endOfMonth } from "../filters/date";
+import {
+    toCollectionDate,
+    startOfMonth,
+    endOfMonth,
+    toDifferHour,
+} from "../filters/date";
 
 const END_POINT = "attendances";
 const ref = db.collection(END_POINT);
@@ -65,11 +70,17 @@ const getters = {
             if (foundUID >= 0) {
                 let selectedAttendance = filteredDetailAttendances[foundUID];
                 selectedAttendance.returnAt = createdAt;
+                selectedAttendance.workingHour = toDifferHour(
+                    selectedAttendance.presentAt,
+                    selectedAttendance.returnAt
+                );
             } else {
                 let data = { uid, displayName, photoURL };
 
                 if (type === "Masuk") {
                     data.presentAt = createdAt;
+                    data.returnAt = createdAt;
+                    data.workingHour = 0;
                 }
 
                 filteredDetailAttendances.push(data);
@@ -336,10 +347,13 @@ const actions = {
         }
     },
 
-    async getUserAttendances({ commit }, uid) {
+    async getUserAttendances({ commit }, { startOfMonth, endOfMonth, uid }) {
         try {
             let query = await db
                 .collection(`users/${uid}/userAttendances`)
+                .where("numericDate", ">=", Number(startOfMonth))
+                .where("numericDate", "<=", Number(endOfMonth))
+                .orderBy("numericDate", "asc")
                 .get();
 
             let { docs } = query;
